@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Interview Prep</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #252836;
+    --border: #2e3147;
+    --accent: #f89820;
+    --accent2: #5b8dee;
+    --green: #3ecf8e;
+    --red: #f87171;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --radius: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header .logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  header .logo span { color: var(--text); }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--accent);
+    color: #000;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+  }
+
+  .main { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 32px 16px; }
+
+  /* ── HOME ── */
+  #home { width: 100%; max-width: 860px; }
+
+  .hero { text-align: center; margin-bottom: 40px; }
+  .hero h1 { font-size: 36px; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; }
+  .hero h1 em { color: var(--accent); font-style: normal; }
+  .hero p { color: var(--muted); font-size: 16px; }
+
+  .stats-bar {
+    display: flex; gap: 12px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .stat-pill strong { color: var(--text); }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    cursor: pointer;
+    transition: border-color .2s, transform .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--cat-color, var(--accent));
+  }
+  .cat-card:hover { border-color: var(--cat-color, var(--accent)); transform: translateY(-2px); }
+  .cat-card.selected { border-color: var(--cat-color, var(--accent)); background: var(--surface2); }
+
+  .cat-icon { font-size: 26px; margin-bottom: 8px; }
+  .cat-name { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .cat-count { font-size: 12px; color: var(--muted); }
+
+  .mode-row { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+
+  .mode-btn {
+    flex: 1; min-width: 160px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    transition: border-color .2s;
+  }
+  .mode-btn:hover, .mode-btn.active { border-color: var(--accent2); }
+  .mode-btn.active { background: var(--surface2); }
+  .mode-btn .mode-name { font-weight: 600; margin-bottom: 4px; }
+  .mode-btn .mode-desc { font-size: 12px; color: var(--muted); }
+
+  .start-row { display: flex; justify-content: center; }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 40px;
+    cursor: pointer;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+  /* ── QUIZ ── */
+  #quiz { width: 100%; max-width: 720px; display: none; }
+
+  .quiz-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 10px;
+  }
+
+  .progress-info { font-size: 14px; color: var(--muted); }
+  .progress-info strong { color: var(--text); }
+
+  .score-badge {
+    font-size: 13px; font-weight: 600;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 14px; border-radius: 999px;
+  }
+
+  .progress-bar {
+    height: 4px; background: var(--surface2); border-radius: 99px;
+    margin-bottom: 28px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 99px; transition: width .4s ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .q-meta {
+    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+
+  .badge {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+    background: var(--surface2); color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .badge.diff-easy { color: var(--green); border-color: var(--green); }
+  .badge.diff-medium { color: var(--accent); border-color: var(--accent); }
+  .badge.diff-hard { color: var(--red); border-color: var(--red); }
+
+  .question-text {
+    font-size: 18px; font-weight: 600; line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 14px 0;
+    overflow-x: auto;
+    color: #cdd6f4;
+    white-space: pre;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color .15s, background .15s;
+    font-size: 15px;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent2); }
+  .option.selected { border-color: var(--accent2); background: #1a2a4a; }
+  .option.correct { border-color: var(--green); background: #0d2d1e; }
+  .option.wrong { border-color: var(--red); background: #2d1111; }
+  .option.disabled { cursor: default; }
+
+  .option-letter {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border-radius: 50%; border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    transition: all .15s;
+  }
+  .option.selected .option-letter { border-color: var(--accent2); color: var(--accent2); }
+  .option.correct .option-letter { border-color: var(--green); color: var(--green); background: #0d2d1e; }
+  .option.wrong .option-letter { border-color: var(--red); color: var(--red); background: #2d1111; }
+
+  .option-icon { margin-left: auto; font-size: 16px; }
+
+  .explanation {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    display: none;
+  }
+  .explanation.show { display: block; }
+  .explanation strong { color: var(--accent2); }
+
+  .quiz-actions {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 20px; gap: 12px;
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 14px; font-weight: 500;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-secondary:hover { border-color: var(--text); color: var(--text); }
+
+  .btn-next {
+    background: var(--accent2);
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: opacity .2s;
+    display: none;
+  }
+  .btn-next:hover { opacity: .85; }
+  .btn-next.show { display: block; }
+
+  /* ── RESULTS ── */
+  #results { width: 100%; max-width: 680px; display: none; text-align: center; }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    margin-bottom: 24px;
+  }
+
+  .score-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--accent);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+  }
+  .score-circle .pct { font-size: 32px; font-weight: 800; color: var(--accent); }
+  .score-circle .lbl { font-size: 11px; color: var(--muted); }
+
+  .result-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+  .result-sub { color: var(--muted); font-size: 15px; margin-bottom: 24px; }
+
+  .result-breakdown {
+    display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px;
+  }
+  .rb-item { text-align: center; }
+  .rb-item .rb-val { font-size: 24px; font-weight: 700; }
+  .rb-item .rb-key { font-size: 12px; color: var(--muted); }
+  .rb-item.correct .rb-val { color: var(--green); }
+  .rb-item.wrong .rb-val { color: var(--red); }
+  .rb-item.skipped .rb-val { color: var(--muted); }
+
+  .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .review-list { text-align: left; }
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 10px;
+  }
+  .review-item.r-correct { border-left: 3px solid var(--green); }
+  .review-item.r-wrong { border-left: 3px solid var(--red); }
+  .review-item.r-skipped { border-left: 3px solid var(--muted); }
+
+  .review-q { font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+  .review-ans { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+  .review-ans span { font-weight: 600; }
+  .review-ans .ok { color: var(--green); }
+  .review-ans .bad { color: var(--red); }
+  .review-exp { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Java<span>Prep</span></div>
+  <span class="tag">INTERVIEW</span>
+</header>
+
+<div class="main">
+
+  <!-- HOME -->
+  <div id="home">
+    <div class="hero">
+      <h1>Ace Your <em>Java</em> Interview</h1>
+      <p>Quiz-style practice covering core Java topics with explanations for every answer.</p>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="section-title">Choose Topics</div>
+    <div class="categories" id="categoryGrid"></div>
+
+    <div class="section-title">Mode</div>
+    <div class="mode-row">
+      <button class="mode-btn active" data-mode="quiz" onclick="selectMode(this,'quiz')">
+        <div class="mode-name">Quiz Mode</div>
+        <div class="mode-desc">Answer, get instant feedback, see explanations</div>
+      </button>
+      <button class="mode-btn" data-mode="random" onclick="selectMode(this,'random')">
+        <div class="mode-name">Random Mix</div>
+        <div class="mode-desc">Shuffle all topics for a broad practice session</div>
+      </button>
+      <button class="mode-btn" data-mode="hard" onclick="selectMode(this,'hard')">
+        <div class="mode-name">Hard Only</div>
+        <div class="mode-desc">Only hard questions to challenge yourself</div>
+      </button>
+    </div>
+
+    <div class="start-row">
+      <button class="btn-primary" id="startBtn" onclick="startQuiz()">Start Quiz</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz">
+    <div class="quiz-header">
+      <div class="progress-info">Question <strong id="qNum">1</strong> of <strong id="qTotal">10</strong></div>
+      <div class="score-badge">Score: <span id="scoreLive">0</span></div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="question-card">
+      <div class="q-meta" id="qMeta"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="code-block" id="codeBlock" style="display:none"></div>
+      <div class="options" id="optionsContainer"></div>
+      <div class="explanation" id="explanation"></div>
+    </div>
+
+    <div class="quiz-actions">
+      <button class="btn-secondary" onclick="skipQuestion()">Skip</button>
+      <button class="btn-next" id="nextBtn" onclick="nextQuestion()">Next →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <div class="result-card">
+      <div class="score-circle">
+        <div class="pct" id="resPct">0%</div>
+        <div class="lbl">SCORE</div>
+      </div>
+      <div class="result-title" id="resTitle"></div>
+      <div class="result-sub" id="resSub"></div>
+      <div class="result-breakdown">
+        <div class="rb-item correct"><div class="rb-val" id="resCorrect">0</div><div class="rb-key">Correct</div></div>
+        <div class="rb-item wrong"><div class="rb-val" id="resWrong">0</div><div class="rb-key">Wrong</div></div>
+        <div class="rb-item skipped"><div class="rb-val" id="resSkipped">0</div><div class="rb-key">Skipped</div></div>
+      </div>
+    </div>
+    <div class="result-actions" style="margin-bottom:24px">
+      <button class="btn-secondary" onclick="showHome()">← Home</button>
+      <button class="btn-primary" onclick="retryQuiz()">Retry Same Quiz</button>
+    </div>
+    <div class="section-title">Review Answers</div>
+    <div class="review-list" id="reviewList"></div>
+  </div>
+
+</div>
+
+<script>
+const CATEGORIES = [
+  { id:'oop',         name:'OOP Concepts',      icon:'🧩', color:'#f89820' },
+  { id:'collections', name:'Collections',        icon:'📦', color:'#5b8dee' },
+  { id:'concurrency', name:'Concurrency',        icon:'⚡', color:'#a78bfa' },
+  { id:'jvm',         name:'JVM & Memory',       icon:'🖥️', color:'#3ecf8e' },
+  { id:'exceptions',  name:'Exceptions',         icon:'🚨', color:'#f87171' },
+  { id:'generics',    name:'Generics',           icon:'🔬', color:'#38bdf8' },
+  { id:'streams',     name:'Streams & Lambda',   icon:'🌊', color:'#fb923c' },
+  { id:'design',      name:'Design Patterns',    icon:'🏗️', color:'#e879f9' },
+  { id:'core',        name:'Core Java',          icon:'☕', color:'#facc15' },
+  { id:'spring',      name:'Spring Framework',   icon:'🌱', color:'#86efac' },
+  { id:'trivia',      name:'Trivia & Gotchas',   icon:'🎯', color:'#f43f5e' },
+];
+
+const QUESTIONS = [
+  // OOP
+  { id:1, cat:'oop', diff:'easy', q:'What is encapsulation in Java?', opts:['Hiding internal state and requiring all interaction to be performed through methods','Inheriting methods from a parent class','Allowing a class to implement multiple behaviors','Overriding methods in a subclass'], ans:0, exp:'Encapsulation bundles data (fields) and the methods that operate on that data within a class, and restricts direct access to some of the object\'s components using access modifiers (private, protected). This prevents accidental modification and enforces invariants.' },
+  { id:2, cat:'oop', diff:'easy', q:'Which keyword is used to inherit a class in Java?', opts:['implements','inherits','extends','super'], ans:2, exp:'"extends" is used for class inheritance. "implements" is used for interfaces. Java only supports single inheritance for classes, but a class can implement multiple interfaces.' },
+  { id:3, cat:'oop', diff:'medium', q:'What is the difference between method overloading and method overriding?', opts:['Overloading is compile-time polymorphism with same method name but different parameters; overriding is runtime polymorphism where a subclass redefines a parent method','Overloading is only possible with static methods; overriding requires abstract methods','Overloading changes return type; overriding changes parameter types','There is no difference'], ans:0, exp:'Overloading (compile-time/static polymorphism) lets you define multiple methods with the same name but different signatures in the same class. Overriding (runtime/dynamic polymorphism) lets a subclass provide a specific implementation of a method already defined in its parent class.' },
+  { id:4, cat:'oop', diff:'medium', q:'Can a constructor be inherited in Java?', opts:['Yes, always','Yes, but only with the super keyword','No, constructors are not inherited','Yes, if declared protected'], ans:2, exp:'Constructors are NOT inherited. A subclass can call a parent constructor using super(), but it does not inherit them. Each class must define its own constructors.' },
+  { id:5, cat:'oop', diff:'hard', q:'What will this print?\n\nclass A {\n  void foo() { System.out.println("A"); }\n}\nclass B extends A {\n  void foo() { System.out.println("B"); }\n}\npublic class Main {\n  public static void main(String[] args) {\n    A obj = new B();\n    obj.foo();\n  }\n}', code:'class A {\n  void foo() { System.out.println("A"); }\n}\nclass B extends A {\n  void foo() { System.out.println("B"); }\n}\npublic class Main {\n  public static void main(String[] args) {\n    A obj = new B();\n    obj.foo();\n  }\n}', opts:['"A"','"B"','Compilation error','Runtime exception'], ans:1, exp:'This is runtime polymorphism (dynamic dispatch). The reference type is A, but the actual object is B. Java always calls the overridden method based on the actual object type at runtime, so "B" is printed.' },
+  { id:6, cat:'oop', diff:'hard', q:'What is the difference between abstract classes and interfaces in Java 8+?', opts:['Abstract classes can have constructors and state; interfaces can have default/static methods but no constructors or instance state','They are identical in Java 8+','Interfaces can extend classes; abstract classes cannot','Abstract classes support multiple inheritance'], ans:0, exp:'Abstract classes can have constructors, instance fields, and any method types. Interfaces (Java 8+) can have default and static methods but still cannot have constructors or instance state (only public static final constants). A class can implement multiple interfaces but extend only one abstract class.' },
+  { id:7, cat:'oop', diff:'medium', q:'What does the "final" keyword mean when applied to a class?', opts:['The class cannot be extended (subclassed)','All methods in the class are final','The class cannot be instantiated','The class is thread-safe'], ans:0, exp:'A final class cannot be subclassed. String, Integer, and many other Java library classes are final to prevent modification of their behavior. Methods in a final class are implicitly final.' },
+  { id:8, cat:'oop', diff:'easy', q:'What is polymorphism?', opts:['A class having multiple constructors','The ability of a single interface to represent different underlying types','Inheriting from multiple classes','Making all methods private'], ans:1, exp:'Polymorphism means "many forms." In Java it allows a single reference type to refer to objects of different types and invoke the appropriate method at runtime. It comes in two forms: compile-time (overloading) and runtime (overriding).' },
+
+  // Collections
+  { id:9, cat:'collections', diff:'easy', q:'What is the difference between ArrayList and LinkedList?', opts:['ArrayList uses a dynamic array (fast random access); LinkedList uses a doubly-linked list (fast insert/delete at ends)','ArrayList is thread-safe; LinkedList is not','LinkedList has better random access performance','They are interchangeable'], ans:0, exp:'ArrayList provides O(1) random access by index but O(n) insertion/deletion in the middle. LinkedList provides O(1) insertion/deletion at the ends (when you have a reference) but O(n) random access. ArrayList is generally preferred unless you need frequent insertion/deletion at arbitrary positions.' },
+  { id:10, cat:'collections', diff:'easy', q:'Which Map implementation maintains insertion order?', opts:['HashMap','TreeMap','LinkedHashMap','Hashtable'], ans:2, exp:'LinkedHashMap maintains insertion order. HashMap has no guaranteed order. TreeMap sorts keys by natural order or a Comparator. Hashtable is a legacy synchronized class with no ordering.' },
+  { id:11, cat:'collections', diff:'medium', q:'What is the time complexity of HashMap get() in the average case?', opts:['O(log n)','O(n)','O(1)','O(n log n)'], ans:2, exp:'HashMap uses a hash function to map keys to buckets, giving O(1) average-case for get() and put(). In the worst case (many collisions), it degrades to O(n), or O(log n) per bucket in Java 8+ when buckets are converted to balanced trees.' },
+  { id:12, cat:'collections', diff:'medium', q:'What happens if you add duplicate elements to a HashSet?', opts:['An exception is thrown','The duplicate replaces the original','The add() method returns false and the set is unchanged','Both are stored'], ans:2, exp:'Sets do not allow duplicates. When you call add() with an existing element, it simply returns false and the set remains unchanged. No exception is thrown.' },
+  { id:13, cat:'collections', diff:'hard', q:'What will this code output?\n\nMap<String,Integer> map = new HashMap<>();\nmap.put("a", 1);\nmap.put("b", 2);\nmap.put("a", 3);\nSystem.out.println(map.size() + " " + map.get("a"));', code:'Map<String,Integer> map = new HashMap<>();\nmap.put("a", 1);\nmap.put("b", 2);\nmap.put("a", 3);\nSystem.out.println(map.size() + " " + map.get("a"));', opts:['3 1','2 3','3 3','2 1'], ans:1, exp:'HashMap replaces the value when the same key is put again. After the three puts, the map has two entries: "a"→3, "b"→2. size() is 2 and get("a") returns 3, so the output is "2 3".' },
+  { id:14, cat:'collections', diff:'hard', q:'What is the difference between fail-fast and fail-safe iterators?', opts:['Fail-fast throws ConcurrentModificationException if the collection is modified during iteration; fail-safe iterates over a copy and does not throw','Fail-fast is used for sorted collections; fail-safe for unsorted','Fail-safe is always preferred','There is no difference in modern Java'], ans:0, exp:'Fail-fast iterators (ArrayList, HashMap) maintain a modCount and throw ConcurrentModificationException if the collection is structurally modified while iterating. Fail-safe iterators (CopyOnWriteArrayList, ConcurrentHashMap) work on a snapshot copy and do not throw, but may not reflect the latest state.' },
+  { id:15, cat:'collections', diff:'medium', q:'When should you use TreeMap instead of HashMap?', opts:['When you need thread-safety','When you need keys to be sorted in natural or custom order','When you need faster lookups','When keys are integers'], ans:1, exp:'TreeMap stores entries in sorted key order (natural ordering or via a Comparator). Use it when you need sorted iteration, range queries (subMap, headMap, tailMap), or floor/ceiling key lookups. HashMap is faster (O(1) vs O(log n)) but unordered.' },
+
+  // Concurrency
+  { id:16, cat:'concurrency', diff:'easy', q:'What is the difference between a process and a thread?', opts:['A process is an independent program with its own memory; a thread is a lightweight unit of execution within a process sharing its memory','They are identical','A thread has its own memory; a process shares memory','Threads cannot communicate with each other'], ans:0, exp:'A process is an independent program with its own heap, stack, and resources. Threads exist within a process and share its heap (and therefore can communicate more easily), but each thread has its own stack and program counter.' },
+  { id:17, cat:'concurrency', diff:'medium', q:'What does the "synchronized" keyword do in Java?', opts:['Makes a variable immutable','Ensures only one thread can execute the synchronized block/method at a time','Marks a variable as volatile','Prevents a method from being overridden'], ans:1, exp:'synchronized acquires an intrinsic lock (monitor) before executing the block or method, and releases it on exit. This ensures mutual exclusion — only one thread can hold the lock at a time — which prevents race conditions on shared mutable state.' },
+  { id:18, cat:'concurrency', diff:'medium', q:'What is the purpose of the "volatile" keyword?', opts:['Makes a field thread-safe for compound operations','Ensures visibility: reads and writes to the field go directly to main memory, not a CPU cache','Prevents the JVM from optimizing the field away','Synchronizes all access to the field'], ans:1, exp:'volatile guarantees visibility. Without it, threads may cache field values in CPU registers and not see updates from other threads. volatile does NOT provide atomicity for compound operations like i++ — use AtomicInteger or synchronized for that.' },
+  { id:19, cat:'concurrency', diff:'hard', q:'What is a deadlock and how can you prevent it?', opts:['A deadlock occurs when a thread is too slow; prevent it by using faster hardware','A deadlock occurs when two or more threads wait forever for locks held by each other; prevent it by consistent lock ordering, timeouts, or lock-free structures','A deadlock is a normal JVM optimization','Deadlocks only occur with synchronized blocks, not ReentrantLock'], ans:1, exp:'Deadlock occurs when Thread A holds lock X and waits for lock Y, while Thread B holds lock Y and waits for lock X. Prevention strategies: always acquire locks in a fixed global order, use tryLock() with timeouts (ReentrantLock), avoid holding multiple locks, or use higher-level concurrency utilities (java.util.concurrent).' },
+  { id:20, cat:'concurrency', diff:'hard', q:'What is the difference between Callable and Runnable?', opts:['They are identical','Callable can return a result and throw checked exceptions; Runnable cannot','Runnable is newer than Callable','Callable is only for GUI threads'], ans:1, exp:'Runnable.run() returns void and cannot throw checked exceptions. Callable.call() returns a typed result (V) and can throw checked exceptions. Callable is used with ExecutorService.submit(), which returns a Future to retrieve the result asynchronously.' },
+  { id:21, cat:'concurrency', diff:'medium', q:'What is the Java Memory Model\'s "happens-before" relationship?', opts:['A guarantee that action A\'s effects are visible to action B if A happens-before B','A constraint on the physical ordering of CPU instructions','A rule for garbage collection','A lock-ordering mechanism'], ans:0, exp:'The happens-before relationship is a guarantee in the Java Memory Model: if action A happens-before action B, then A\'s writes are guaranteed to be visible to B. Common establishes: monitor unlock→lock, volatile write→read, thread.start()→first action of thread, end of thread→join().' },
+
+  // JVM & Memory
+  { id:22, cat:'jvm', diff:'easy', q:'What are the main areas of JVM memory?', opts:['Stack and Queue','Heap, Stack, Method Area (Metaspace), PC Registers, Native Method Stack','RAM and ROM','Heap and Cache'], ans:1, exp:'The JVM memory model includes: Heap (objects and arrays), Stack (per-thread frames with local variables), Method Area/Metaspace (class metadata, static fields), PC Register (current instruction pointer per thread), and Native Method Stack (for native calls). The Heap is the main area subject to garbage collection.' },
+  { id:23, cat:'jvm', diff:'medium', q:'What is the difference between the stack and the heap in Java?', opts:['Stack holds objects; heap holds primitive values','Stack holds method frames and local variables (thread-local, auto-managed); heap holds all objects (shared, GC-managed)','They are the same thing','Stack is larger than heap'], ans:1, exp:'The stack is thread-local, stores method call frames (local variables, return addresses), and is automatically managed (LIFO pop on method return). The heap is shared across all threads, stores all object instances, and is managed by the garbage collector. Local primitive variables live on the stack; objects always live on the heap.' },
+  { id:24, cat:'jvm', diff:'medium', q:'What triggers a StackOverflowError?', opts:['Too many objects on the heap','Infinite or very deep recursion that exhausts the thread stack','A null pointer dereference','An out-of-memory condition'], ans:1, exp:'Each method call pushes a new frame onto the thread stack. Infinite recursion (or recursion too deep for the stack size) causes the stack to fill up and the JVM throws StackOverflowError. This is a subclass of Error, not Exception, and typically cannot be recovered from.' },
+  { id:25, cat:'jvm', diff:'hard', q:'What is the difference between minor GC and major (full) GC?', opts:['They are identical','Minor GC collects the Young Generation (Eden + Survivors); major/full GC collects the Old Generation (and often the entire heap), and is much slower','Minor GC runs more often and collects less','Major GC only runs at JVM shutdown'], ans:1, exp:'The heap is divided into Young (Eden + S0 + S1) and Old (Tenured) generations. Minor GC collects the Young Generation — fast and frequent. Full GC (major GC) collects the Old Generation (and typically all generations), is far more expensive, and causes longer "stop-the-world" pauses. Objects that survive several minor GCs are promoted to the Old Generation.' },
+  { id:26, cat:'jvm', diff:'hard', q:'What does the JIT compiler do?', opts:['It translates Java source to bytecode','It interprets bytecode line by line','It compiles frequently-executed bytecode to native machine code at runtime for improved performance','It verifies bytecode before loading'], ans:2, exp:'The Just-In-Time (JIT) compiler monitors "hot" methods (executed frequently) and compiles them from JVM bytecode to native machine code. This gives Java near-native performance for hot paths while preserving write-once-run-anywhere portability. HotSpot uses C1 (client, fast compile) and C2 (server, optimizing) compilers.' },
+
+  // Exceptions
+  { id:27, cat:'exceptions', diff:'easy', q:'What is the difference between checked and unchecked exceptions?', opts:['Checked exceptions must be declared or caught at compile time; unchecked exceptions (RuntimeException subclasses) do not','Checked exceptions are more serious than unchecked','Unchecked exceptions must always be caught','There is no difference in Java 8+'], ans:0, exp:'Checked exceptions (e.g., IOException, SQLException) must either be caught with try-catch or declared in the method signature with throws — enforced by the compiler. Unchecked exceptions (RuntimeException and its subclasses, e.g., NullPointerException, IllegalArgumentException) do not require this and indicate programming errors.' },
+  { id:28, cat:'exceptions', diff:'medium', q:'What is the difference between throw and throws?', opts:['"throw" is used to explicitly throw an exception; "throws" declares that a method may throw checked exceptions','They are interchangeable','throws actually throws the exception; throw is a declaration','Neither is needed if using try-catch'], ans:0, exp:'"throw" is a statement used to explicitly throw an exception instance (e.g., throw new IllegalArgumentException()). "throws" is a clause in a method signature declaring which checked exceptions the method may propagate (e.g., void read() throws IOException).' },
+  { id:29, cat:'exceptions', diff:'medium', q:'Will the finally block always execute?', opts:['Yes, always','No, never','Yes, except when System.exit() is called or the JVM crashes','Only if an exception was thrown'], ans:2, exp:'The finally block executes after try/catch completes, whether or not an exception was thrown, making it ideal for cleanup (closing resources). Exceptions: System.exit() shuts down the JVM before finally runs, a JVM crash (OutOfMemoryError in some cases, kill -9) may prevent it, and an infinite loop in try will also prevent it.' },
+  { id:30, cat:'exceptions', diff:'hard', q:'What is try-with-resources and what interface must resources implement?', opts:['A try block that auto-closes resources; they must implement Closeable or AutoCloseable','A try block that retries on failure; resources must implement Serializable','A way to suppress all exceptions; no interface required','A try block that opens a new thread; resources must implement Runnable'], ans:0, exp:'Try-with-resources (Java 7+) automatically calls close() on resources when the try block exits, preventing resource leaks. The resource must implement AutoCloseable (or its subinterface Closeable). Multiple resources can be declared; they are closed in reverse declaration order. Exceptions from close() are suppressed if an exception was already thrown.' },
+
+  // Generics
+  { id:31, cat:'generics', diff:'easy', q:'What is the purpose of generics in Java?', opts:['To improve runtime performance','To allow types to be parameters to classes and methods, providing compile-time type safety and eliminating casts','To enable multiple inheritance','To allow dynamic typing'], ans:1, exp:'Generics enable you to define classes, interfaces, and methods with type parameters. This provides compile-time type checking (preventing ClassCastException at runtime), eliminates the need for explicit casts, and enables writing reusable code that works with different types.' },
+  { id:32, cat:'generics', diff:'medium', q:'What is type erasure in Java?', opts:['Removing types at compile time that are never used','The process by which generic type parameters are removed at runtime; the JVM only sees raw types','Erasing the bytecode of unused classes','A garbage collection technique'], ans:1, exp:'Java implements generics via type erasure: generic type information is only present at compile time and is erased by the compiler to raw types (or bounds) in bytecode. The JVM has no knowledge of generic types at runtime. This ensures backward compatibility but means you cannot do things like new T() or get the generic type via reflection without workarounds.' },
+  { id:33, cat:'generics', diff:'hard', q:'What is the difference between List<? extends T> and List<? super T>?', opts:['They are identical','List<? extends T> is a producer (you can read T; PECS: producer extends); List<? super T> is a consumer (you can write T; consumer super)','List<? extends T> allows writing; List<? super T> allows reading','Wildcards cannot be used with List'], ans:1, exp:'PECS (Producer Extends, Consumer Super): List<? extends T> can produce (return) T values — you can read from it as T but cannot add to it safely. List<? super T> can consume T values — you can add T to it but can only read Object from it. Use extends when reading, super when writing.' },
+
+  // Streams & Lambda
+  { id:34, cat:'streams', diff:'easy', q:'What is the difference between map() and flatMap() in Java Streams?', opts:['map() transforms each element to a new element; flatMap() transforms each element to a Stream and flattens all streams into one','They are identical','flatMap() is faster than map()','map() can handle null; flatMap() cannot'], ans:0, exp:'map() applies a function that returns a single value per element (one-to-one transformation). flatMap() applies a function that returns a Stream per element, then flattens all those streams into a single stream (one-to-many). Useful for nested collections: stream of lists → stream of elements.' },
+  { id:35, cat:'streams', diff:'medium', q:'What is the difference between intermediate and terminal operations in Streams?', opts:['Intermediate operations (e.g., filter, map) are lazy and return a new Stream; terminal operations (e.g., collect, forEach) are eager and produce a result','Terminal operations return a Stream; intermediate do not','Intermediate operations execute immediately','There is no difference'], ans:0, exp:'Intermediate operations (filter, map, sorted, limit, etc.) are lazy — they return a new Stream and do not process any elements until a terminal operation is called. Terminal operations (collect, forEach, reduce, count, findFirst, etc.) trigger the pipeline to execute and produce a result or side effect.' },
+  { id:36, cat:'streams', diff:'hard', q:'What is the difference between findFirst() and findAny() in a parallel stream?', opts:['They are identical','findFirst() returns the first element in encounter order; findAny() may return any element (faster for parallel streams as it avoids ordering overhead)','findAny() always returns the last element','findFirst() throws if the stream is parallel'], ans:1, exp:'findFirst() always returns the first element in the stream\'s encounter order, which requires synchronization in parallel streams (slower). findAny() is free to return any element and is optimized for parallel streams — it returns whichever element is found first by any thread, offering better performance when order doesn\'t matter.' },
+  { id:37, cat:'streams', diff:'medium', q:'What does the Collectors.groupingBy() method do?', opts:['Sorts elements by a key','Groups stream elements into a Map<K, List<V>> by a classifier function','Filters elements by a predicate','Merges two streams'], ans:1, exp:'Collectors.groupingBy(classifier) groups stream elements into a Map where keys are the result of applying the classifier function and values are Lists of matching elements. You can customize the downstream collector (e.g., counting(), mapping()) as a second argument.' },
+
+  // Design Patterns
+  { id:38, cat:'design', diff:'medium', q:'What is the Singleton pattern and what are its thread-safety concerns?', opts:['A pattern for creating multiple instances; thread-safe by default','A pattern ensuring only one instance of a class; naive implementations are not thread-safe — use double-checked locking with volatile or an enum','A pattern for creating objects without specifying class; always thread-safe','A structural pattern; unrelated to thread safety'], ans:1, exp:'Singleton ensures one instance per JVM. The naive lazy implementation is not thread-safe. Safe approaches: (1) Eager initialization (instance created at class load), (2) synchronized getInstance(), (3) double-checked locking with volatile field, (4) Initialization-on-demand holder idiom, (5) enum singleton (simplest and safest — preferred by Effective Java).' },
+  { id:39, cat:'design', diff:'medium', q:'What is the difference between the Factory Method and Abstract Factory patterns?', opts:['Factory Method uses one method to create one type of product; Abstract Factory provides an interface for creating families of related objects','They are identical','Abstract Factory uses inheritance; Factory Method uses composition','Factory Method is for immutable objects only'], ans:0, exp:'Factory Method defines an interface for creating an object but lets subclasses decide which class to instantiate (one product type, subclass controls which). Abstract Factory provides an interface for creating families of related objects (e.g., Button + Checkbox for Windows vs. Mac) without specifying concrete classes — it groups multiple factory methods.' },
+  { id:40, cat:'design', diff:'hard', q:'What is the Observer pattern and where is it used in Java?', opts:['A pattern for creating objects; used in java.lang.Object','A pattern where an object (subject) maintains a list of dependents (observers) and notifies them of state changes; used in EventListeners, PropertyChangeListener, and reactive frameworks','A sorting pattern used in Collections','A pattern for thread synchronization'], ans:1, exp:'The Observer pattern (also called publish-subscribe) decouples the subject from its observers. When the subject\'s state changes, it notifies all registered observers. Java examples: java.util.Observer/Observable (deprecated), EventListener in Swing/AWT, PropertyChangeListener, and modern reactive frameworks (RxJava, Project Reactor, Flow API in Java 9+).' },
+
+  // Core Java
+  { id:41, cat:'core', diff:'easy', q:'What is the difference between == and .equals() for String comparison?', opts:['They are identical for Strings','== compares object references (memory address); .equals() compares the actual content of the strings','== is faster and always preferred','equals() compares references; == compares content'], ans:1, exp:'== checks reference equality (are these two variables pointing to the same object in memory). .equals() checks logical equality (do the strings have the same characters). Two String literals may share the same object via the String pool, but new String("x") always creates a new object, so use .equals() to compare string content.' },
+  { id:42, cat:'core', diff:'medium', q:'What is autoboxing and when can it cause issues?', opts:['Converting between int[] and Integer[]','The automatic conversion between primitive types (int, boolean) and their wrapper classes (Integer, Boolean); can cause NullPointerException and performance issues in tight loops','A feature to automatically import classes','Converting Strings to numbers'], ans:1, exp:'Autoboxing (primitive → wrapper) and unboxing (wrapper → primitive) happen automatically. Issues: (1) NullPointerException when unboxing a null Integer, (2) Unexpected == behavior (Integer cache only covers -128 to 127), (3) Performance overhead from repeated boxing/unboxing in tight loops (creates many temporary objects).' },
+  { id:43, cat:'core', diff:'medium', q:'What is the String pool (interning) in Java?', opts:['A pool of threads for String operations','A cache in the heap where string literals are stored to avoid creating duplicate String objects','A collection type for Strings','A security feature to validate strings'], ans:1, exp:'The String pool (part of the heap since Java 7+) stores String literals. When you write String s = "hello", the JVM checks if "hello" already exists in the pool; if so, it returns that reference. This avoids creating duplicate objects. new String("hello") always creates a new heap object outside the pool. String.intern() can manually add a string to the pool.' },
+  { id:44, cat:'core', diff:'hard', q:'What is the contract between hashCode() and equals()?', opts:['They are unrelated','If two objects are equal (equals() returns true), they must have the same hashCode(); if two objects have the same hashCode, they need not be equal','If hashCode() is the same, equals() must return true','equals() is only used when hashCode() differs'], ans:1, exp:'The contract: (1) If a.equals(b) is true, then a.hashCode() == b.hashCode() must be true. (2) If a.hashCode() == b.hashCode(), a.equals(b) may be false (collision). (3) hashCode() must be consistent across multiple calls. Violating this breaks HashMap, HashSet, and other hash-based collections because they use hashCode to find the bucket before calling equals.' },
+  { id:45, cat:'core', diff:'hard', q:'What is the difference between StringBuilder and StringBuffer?', opts:['StringBuffer is newer and faster','StringBuilder is not thread-safe but faster; StringBuffer is thread-safe (synchronized methods) but slower','They are identical','StringBuilder is immutable; StringBuffer is mutable'], ans:1, exp:'Both are mutable string builders. StringBuffer (Java 1.0) has synchronized methods, making it thread-safe but slower. StringBuilder (Java 5) is not synchronized, making it faster but not safe for concurrent use without external synchronization. For single-threaded use (the vast majority of cases), prefer StringBuilder.' },
+
+  // Spring
+  { id:46, cat:'spring', diff:'easy', q:'What is Dependency Injection (DI) and how does Spring implement it?', opts:['A pattern where a class creates its own dependencies; Spring uses XML only','A pattern where dependencies are provided to a class from the outside, decoupling creation from use; Spring injects them via constructor, setter, or field injection with @Autowired','A design pattern for database connections','A way to inject SQL into queries'], ans:1, exp:'DI inverts control of dependency creation: instead of a class instantiating its own dependencies, they are injected from outside. Spring\'s IoC container manages beans and injects dependencies via @Autowired (field/setter/constructor). Constructor injection is preferred: it makes dependencies explicit, supports immutability, and is easier to test.' },
+  { id:47, cat:'spring', diff:'medium', q:'What is the difference between @Component, @Service, @Repository, and @Controller?', opts:['They have completely different behaviors','They are all @Component stereotypes; @Service, @Repository, and @Controller add semantic meaning and extra behavior (@Repository enables exception translation)','@Service is for business logic only and cannot be autowired','@Controller handles all HTTP methods'], ans:1, exp:'All four are specializations of @Component and are detected by component scanning. The semantic annotations help with code readability. @Repository additionally applies persistence exception translation (Spring wraps data-access exceptions into DataAccessException). @Controller marks MVC controllers. @Service is for business logic and has no extra behavior.' },
+  { id:48, cat:'spring', diff:'medium', q:'What is the difference between @Bean and @Component?', opts:['They are identical','@Component is a class-level annotation for auto-detection; @Bean is a method-level annotation in @Configuration classes to explicitly declare a bean — used for third-party classes you cannot annotate','@Bean is deprecated in Spring Boot','@Component creates singleton beans; @Bean creates prototype beans'], ans:1, exp:'@Component (and its stereotypes) annotates your own classes and lets Spring auto-detect them via classpath scanning. @Bean annotates methods in @Configuration classes and explicitly declares a bean — necessary when you cannot add @Component to the class (e.g., third-party library classes, or when you need fine-grained control over construction).' },
+  { id:49, cat:'spring', diff:'hard', q:'What is the difference between @Transactional propagation REQUIRED and REQUIRES_NEW?', opts:['They are identical','REQUIRED joins an existing transaction or creates a new one; REQUIRES_NEW always suspends the current transaction and creates a brand new one','REQUIRES_NEW requires the caller to have a transaction','REQUIRED always creates a new transaction'], ans:1, exp:'REQUIRED (default): joins the existing transaction if one is active; otherwise creates a new one. All work shares one transaction — a rollback in the called method rolls back everything. REQUIRES_NEW: suspends the current transaction and creates an independent new one. The inner transaction can commit or roll back independently of the outer one. Use REQUIRES_NEW for operations that must succeed regardless of the caller\'s transaction (e.g., audit logging).' },
+  { id:50, cat:'spring', diff:'hard', q:'How does Spring Boot auto-configuration work?', opts:['It reads XML configuration files','@EnableAutoConfiguration triggers scanning of META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports; Spring conditionally applies configuration classes based on what\'s on the classpath and existing beans','It requires explicit bean declarations for every dependency','Auto-configuration only works with Spring Data'], ans:1, exp:'@SpringBootApplication includes @EnableAutoConfiguration, which loads autoconfiguration classes from META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports (spring.factories in older versions). Each autoconfiguration class uses @Conditional annotations (@ConditionalOnClass, @ConditionalOnMissingBean, etc.) to apply only when relevant libraries are present and beans have not already been defined.' },
+];
+
+// State
+let selectedCats = new Set();
+let selectedMode = 'quiz';
+let quizQuestions = [];
+let currentIdx = 0;
+let score = 0;
+let answered = 0;
+let results = [];
+
+function init() {
+  renderCategories();
+  renderStats();
+}
+
+function renderStats() {
+  const bar = document.getElementById('statsBar');
+  bar.innerHTML = `
+    <div class="stat-pill"><strong>${QUESTIONS.length}</strong> Questions</div>
+    <div class="stat-pill"><strong>${CATEGORIES.length}</strong> Topics</div>
+    <div class="stat-pill"><strong>${QUESTIONS.filter(q=>q.diff==='hard').length}</strong> Hard Questions</div>
+  `;
+}
+
+function renderCategories() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const count = QUESTIONS.filter(q => q.cat === cat.id).length;
+    return `<div class="cat-card" data-cat="${cat.id}" style="--cat-color:${cat.color}" onclick="toggleCat('${cat.id}', this)">
+      <div class="cat-icon">${cat.icon}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-count">${count} questions</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCat(id, el) {
+  if (selectedCats.has(id)) {
+    selectedCats.delete(id);
+    el.classList.remove('selected');
+  } else {
+    selectedCats.add(id);
+    el.classList.add('selected');
+  }
+}
+
+function selectMode(btn, mode) {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedMode = mode;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  let pool = [...QUESTIONS];
+  if (selectedMode === 'hard') {
+    pool = pool.filter(q => q.diff === 'hard');
+  } else if (selectedMode === 'quiz' && selectedCats.size > 0) {
+    pool = pool.filter(q => selectedCats.has(q.cat));
+  }
+  if (pool.length === 0) { alert('No questions match your selection.'); return; }
+  quizQuestions = shuffle(pool).slice(0, Math.min(15, pool.length));
+  currentIdx = 0; score = 0; answered = 0; results = [];
+  showView('quiz');
+  renderQuestion();
+}
+
+function showView(view) {
+  document.getElementById('home').style.display = view === 'home' ? 'block' : 'none';
+  document.getElementById('quiz').style.display = view === 'quiz' ? 'block' : 'none';
+  document.getElementById('results').style.display = view === 'results' ? 'block' : 'none';
+}
+
+function showHome() {
+  showView('home');
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentIdx];
+  const total = quizQuestions.length;
+  document.getElementById('qNum').textContent = currentIdx + 1;
+  document.getElementById('qTotal').textContent = total;
+  document.getElementById('scoreLive').textContent = score;
+  document.getElementById('progressFill').style.width = ((currentIdx / total) * 100) + '%';
+
+  const diffMap = { easy: 'diff-easy', medium: 'diff-medium', hard: 'diff-hard' };
+  const catName = CATEGORIES.find(c => c.id === q.cat)?.name || q.cat;
+  document.getElementById('qMeta').innerHTML = `
+    <span class="badge ${diffMap[q.diff]}">${q.diff.toUpperCase()}</span>
+    <span class="badge">${catName}</span>
+  `;
+
+  document.getElementById('questionText').textContent = q.q;
+
+  const codeEl = document.getElementById('codeBlock');
+  if (q.code) {
+    codeEl.textContent = q.code;
+    codeEl.style.display = 'block';
+  } else {
+    codeEl.style.display = 'none';
+  }
+
+  const opts = document.getElementById('optionsContainer');
+  opts.innerHTML = q.opts.map((opt, i) => `
+    <div class="option" id="opt${i}" onclick="selectAnswer(${i})">
+      <div class="option-letter">${String.fromCharCode(65+i)}</div>
+      <div>${opt}</div>
+      <div class="option-icon" id="icon${i}"></div>
+    </div>
+  `).join('');
+
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('explanation').innerHTML = '';
+  document.getElementById('nextBtn').classList.remove('show');
+}
+
+function selectAnswer(idx) {
+  const q = quizQuestions[currentIdx];
+  const opts = document.querySelectorAll('.option');
+  if (opts[0].classList.contains('disabled')) return;
+
+  opts.forEach(o => o.classList.add('disabled'));
+
+  const correct = idx === q.ans;
+  if (correct) {
+    opts[idx].classList.add('correct');
+    document.getElementById('icon' + idx).textContent = '✓';
+    score++;
+    document.getElementById('scoreLive').textContent = score;
+  } else {
+    opts[idx].classList.add('wrong');
+    document.getElementById('icon' + idx).textContent = '✗';
+    opts[q.ans].classList.add('correct');
+    document.getElementById('icon' + q.ans).textContent = '✓';
+  }
+
+  results.push({ q, chosen: idx, correct });
+
+  const exp = document.getElementById('explanation');
+  exp.innerHTML = `<strong>Explanation:</strong> ${q.exp}`;
+  exp.classList.add('show');
+
+  document.getElementById('nextBtn').textContent = currentIdx + 1 < quizQuestions.length ? 'Next →' : 'See Results';
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function skipQuestion() {
+  const q = quizQuestions[currentIdx];
+  results.push({ q, chosen: -1, correct: false });
+  nextQuestion(true);
+}
+
+function nextQuestion(skipped = false) {
+  currentIdx++;
+  if (currentIdx >= quizQuestions.length) {
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResults() {
+  showView('results');
+  const total = quizQuestions.length;
+  const correct = results.filter(r => r.correct).length;
+  const wrong = results.filter(r => !r.correct && r.chosen !== -1).length;
+  const skipped = results.filter(r => r.chosen === -1).length;
+  const pct = Math.round((correct / total) * 100);
+
+  document.getElementById('resPct').textContent = pct + '%';
+  document.getElementById('resCorrect').textContent = correct;
+  document.getElementById('resWrong').textContent = wrong;
+  document.getElementById('resSkipped').textContent = skipped;
+
+  let title, sub;
+  if (pct >= 90) { title = 'Outstanding!'; sub = 'You\'re well-prepared for Java interviews.'; }
+  else if (pct >= 75) { title = 'Great Work!'; sub = 'Solid Java knowledge — review a few gaps.'; }
+  else if (pct >= 60) { title = 'Good Effort'; sub = 'You\'re on the right track — keep practicing.'; }
+  else if (pct >= 40) { title = 'Keep Studying'; sub = 'Focus on the topics you missed.'; }
+  else { title = 'Keep At It'; sub = 'Review the fundamentals and try again.'; }
+
+  document.getElementById('resTitle').textContent = title;
+  document.getElementById('resSub').textContent = sub;
+
+  const catPct = document.getElementById('resPct');
+  catPct.style.color = pct >= 75 ? 'var(--green)' : pct >= 50 ? 'var(--accent)' : 'var(--red)';
+  document.querySelector('.score-circle').style.borderColor = catPct.style.color;
+
+  const review = document.getElementById('reviewList');
+  review.innerHTML = results.map((r, i) => {
+    const cls = r.chosen === -1 ? 'r-skipped' : r.correct ? 'r-correct' : 'r-wrong';
+    const catName = CATEGORIES.find(c => c.id === r.q.cat)?.name || r.q.cat;
+    const yourAns = r.chosen === -1
+      ? '<span>Skipped</span>'
+      : `<span class="${r.correct ? 'ok' : 'bad'}">${String.fromCharCode(65 + r.chosen)}. ${r.q.opts[r.chosen]}</span>`;
+    const correctAns = r.correct ? '' : `<div class="review-ans">Correct: <span class="ok">${String.fromCharCode(65 + r.q.ans)}. ${r.q.opts[r.q.ans]}</span></div>`;
+    return `<div class="review-item ${cls}">
+      <div class="review-q">${i+1}. ${r.q.q.split('\n')[0]}</div>
+      <div class="review-ans">Your answer: ${yourAns}</div>
+      ${correctAns}
+      <div class="review-exp">${r.q.exp}</div>
+    </div>`;
+  }).join('');
+}
+
+function retryQuiz() {
+  currentIdx = 0; score = 0; results = [];
+  quizQuestions = shuffle(quizQuestions);
+  showView('quiz');
+  renderQuestion();
+}
+
+init();
+</script>
+</body>
+</html>
